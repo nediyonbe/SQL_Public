@@ -125,7 +125,7 @@ begin
        and to_number(substr(draft.fld_sls_cmpgn_perd_id,1,4) || substr(draft.fld_sls_cmpgn_perd_id,7,2)) >= campaign_pc 
       group by draft.fld_sls_cmpgn_perd_id, draft.acct_key;
 
--- JOIN FIRST SET OF TABLES
+-- JOIN FIRST SET OF TABLES--
 -- BRING COMMUNICATION PREFERENCES
       EXECUTE IMMEDIATE 'TRUNCATE TABLE IS3';
       INSERT INTO IS3
