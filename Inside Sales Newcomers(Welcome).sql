@@ -88,12 +88,9 @@ begin
   SELECT ACCOUNT_KEY,
         ACCOUNT_TYPE,
         ACCOUNT_NUMBER AS IS_ACCOUNT_NUMBER, 
-        CASE
-          WHEN BDM_DISTRICT_NO IS NULL THEN DISTRICT_NO
-            ELSE BDM_DISTRICT_NO
-              END AS LEADERSHIP_LINEAGE, -- This is actually leadership lineage if only the Rep is in leadership region. The request was done so 
-        SUBSTR(z.DIV_DESC_TXT, 1, INSTR(z.DIV_DESC_TXT, ' ', 1)) AS DIVISION,
-        DISTRICT_NO AS DISTRICT,
+        0 AS LEADERSHIP_LINEAGE, 
+        z.DESCRIPTION AS DISTRICT,
+        z.PARENT_ID AS DIVISION,
         --DELIVERY_TERR_CD AS TRANSPZ,
         LOA, 
         NAME_FIRST AS I_S_FIRST_NAME, NAME_MIDDLE AS IS_MIDDLE_NAME, NAME_LAST AS IS_LAST_NAME, 
@@ -115,22 +112,17 @@ begin
         trunc(sysdate) AS RECORD_DATE,
         campy AS CAMPAIGN
   FROM cdw_rep@sre_prod.lnk c
-  LEFT JOIN CDW_DIM_MRKT_ZONE@SRE_PROD.LNK z
-  ON CASE 
-          WHEN BDM_DISTRICT_NO IS NULL THEN c.DISTRICT_NO
-            ELSE c.BDM_DISTRICT_NO
-              END = z.ZONE_DESC_TXT
-  --ON DIVS.District_Number = c.DISTRICT_NO
-  WHERE c.CREATED_ON >= SYSDATE - days_before_today_start 
-        AND c.CREATED_ON <= SYSDATE - days_before_today_end -- Gives the people who signed up 5, 6, 7 days before: Changedupon Cindy's email on Sep 28 2018
-            --AND STATUS = 'Pending Appointment'
+  LEFT JOIN FIELD_ASSIGNMENTS@SRE_PROD.LNK z
+  ON CHANNEL = z.ID
+  WHERE c.CREATED_ON >= SYSDATE - 6 
+        AND c.CREATED_ON <= SYSDATE - 4 -- Gives the people who signed up 5, 6, 7 days before: Changedupon Cindy's email on Sep 28 2018
         AND c.ACCOUNT_NUMBER > 500
         AND c.ACCOUNT_TYPE = 'Representative'
   ORDER BY STATUS, CREATED_ON DESC;
  
   -- re-add the key as it is necessary for the join below
   EXECUTE IMMEDIATE 'ALTER TABLE is_welcome
-  ADD CONSTRAINT accW PRIMARY KEY(ACCOUNT_KEY, WC, CAMPAIGN)';
+  ADD CONSTRAINT accw PRIMARY KEY(ACCOUNT_KEY, WC, CAMPAIGN)';
   
   -- language abreviations cause error at hubspot. Update with its full name
   UPDATE IS_WELCOME
