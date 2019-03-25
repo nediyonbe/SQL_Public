@@ -2,7 +2,7 @@ create or replace procedure INSIDESALES_WELCOME_3(giorno IN NUMBER, days_before_
 
   daytoday NUMBER(8);
   campy NUMBER(8);
-  
+
   campaign_id NUMBER(8);
   campaign_pc NUMBER(8);
   campaign_pc2 NUMBER(8);
