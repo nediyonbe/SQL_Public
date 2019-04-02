@@ -1,0 +1,29 @@
+
+
+SELECT x.*,  c.QV_DTC
+FROM (
+      SELECT CAMPAIGN, ID, ACCOUNT_KEY, LPAD(' ',LEVEL * 2,' ') || ACCOUNT_NAME AS NOM,
+             QV,
+             SPONSOR_ID, PRIOR ACCOUNT_NAME AS SPONSOR_NAME, 
+             CONNECT_BY_ROOT ACCOUNT_NAME ROOT_SPONSOR_NAME,
+             CONNECT_BY_ROOT ID TOPLINE_CALCULATED,
+             SYS_CONNECT_BY_PATH(ID,'/') LINEAGE_IDs,
+             LEVEL AS NIVEAU
+      FROM AR
+      WHERE CAMPAIGN BETWEEN 201819 AND 201907 
+            --AND STATUS IN ('Z2','Z3')
+            AND LEVEL <= 4
+      CONNECT BY PRIOR ID = SPONSOR_ID
+              AND PRIOR CAMPAIGN = CAMPAIGN
+      START WITH ID IN (57371, 80024, 104277)
+      --ORDER SIBLINGS BY SPONSOR_ID, ID;
+      ) x 
+INNER JOIN cdw_campaign@sre_prod.lnk c
+     ON x.ACCOUNT_KEY = c.ACCOUNT_KEY 
+        AND x.CAMPAIGN = c.YYYYCC
+ORDER BY CAMPAIGN, TOPLINE_CALCULATED, NIVEAU, ID;
+        
+select *
+from cdw_campaign@sre_prod.lnk
+where yyyycc = 201822 and account_key = 3450348111
+;
