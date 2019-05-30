@@ -23,6 +23,7 @@ INNER JOIN cdw_campaign@sre_prod.lnk c
         AND x.CAMPAIGN = c.YYYYCC
 ORDER BY CAMPAIGN, TOPLINE_CALCULATED, NIVEAU, ID;
         
+/* TEST
 select *
 from cdw_campaign@sre_prod.lnk
 where yyyycc = 201822 and account_key = 3450348111

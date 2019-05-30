@@ -1,5 +1,3 @@
-
-
 SELECT x.*,  c.QV_DTC
 FROM (
       SELECT CAMPAIGN, ID, ACCOUNT_KEY, LPAD(' ',LEVEL * 2,' ') || ACCOUNT_NAME AS NOM,
@@ -22,9 +20,3 @@ INNER JOIN cdw_campaign@sre_prod.lnk c
      ON x.ACCOUNT_KEY = c.ACCOUNT_KEY 
         AND x.CAMPAIGN = c.YYYYCC
 ORDER BY CAMPAIGN, TOPLINE_CALCULATED, NIVEAU, ID;
-        
-/* TEST
-select *
-from cdw_campaign@sre_prod.lnk
-where yyyycc = 201822 and account_key = 3450348111
-;
